@@ -1,0 +1,21 @@
+# .gitignore
+
+# Exclude build artifacts
+build/
+*.o
+*.elf
+*.hex
+*.bin
+*.map
+*.lst
+
+# Exclude STM32CubeIDE artifacts
+.cproject
+.project
+.settings/
+
+# Exclude other potential IDE/config files
+*.user
+*.sublime-*
+*.vscode/
+
