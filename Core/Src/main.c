@@ -141,18 +141,7 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   char msg[128];
-  /*
-  HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c1, LIDAR_ADDR1 << 1, 10, HAL_MAX_DELAY);
-  if(ret == HAL_OK)
-  {
-	  sprintf(msg, "Device is ready.\r\n");
-	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
-  }
-  else
-  {
-	  sprintf(msg, "Device is not connected.\r\n");
-	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
-  }*/
+
   CheckDevice();
   /* USER CODE END 2 */
 
@@ -160,22 +149,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  /*
-	  // 1. Write 0x04 to register 0x00.
-	  HAL_I2C_Mem_Write(&hi2c1, LIDAR_ADDR1 << 1, ACQ_COMMAND, 1, &TAKE_DIST, 1, HAL_MAX_DELAY);
 
-	  // 2. Read register 0x01.
-	  do {
-		  HAL_I2C_Mem_Read(&hi2c1, LIDAR_ADDR1 << 1, STATUS_REG, 1, &status, 1, HAL_MAX_DELAY);
-	  } while (status & 0x01);
-	  // 3. Repeat step 2 until bit 0 (LSB) goes low.
-
-	  // 4. Read two bytes from 0x10 (low byte 0x10 then high byte 0x11) to obtain the 16-bit measured distance in centimeters.
-	  HAL_I2C_Mem_Read(&hi2c1, LIDAR_ADDR1 << 1, DISTANCE_REG_LOW, 1, &distance_low, 1, HAL_MAX_DELAY);
-	  HAL_I2C_Mem_Read(&hi2c1, LIDAR_ADDR1 << 1, DISTANCE_REG_HIGH, 1, &distance_high, 1, HAL_MAX_DELAY);
-
-	  distance_cm = ((uint16_t)distance_high << 8) | distance_low;
-	  */
 	  distance_cm = GetDistance();
 
 	  sprintf(msg, "distance: %d\r\n", distance_cm);
