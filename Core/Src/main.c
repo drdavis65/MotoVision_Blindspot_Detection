@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "string.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -31,11 +31,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define LIDAR_ADDR1 0x0062
-#define ACQ_COMMAND 0x00
-#define STATUS_REG  0x01
-#define DISTANCE_REG_LOW  0x10
-#define DISTANCE_REG_HIGH 0x11
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -63,7 +59,54 @@ static void MX_I2C1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+uint8_t LIDAR_ADDR1 = 0x62;
+uint8_t ACQ_COMMAND = 0x00;
+uint8_t TAKE_DIST = 0x04;
+uint8_t DISTANCE_REG_LOW = 0x10;
+uint8_t DISTANCE_REG_HIGH = 0x11;
+uint8_t STATUS_REG = 0x01;
+uint8_t BOARD_TEMPERATURE = 0xE0;
+uint8_t FACTORY_RESET = 0xE4;
+uint8_t DETECTION_SENSIVITY = 0x1C;
+uint8_t ACQUISITION_COUNT = 0x05;
+uint8_t QUICK_TERMINATION = 0xE5;
+uint8_t SOC_TEMPERATURE = 0xEC;
+uint8_t HIGH_ACCURACY_MODE = 0xEB;
+uint8_t status;
+uint8_t distance_low;
+uint8_t distance_high;
+uint16_t distance_cm;
+void CheckDevice(){
+	char msg[128];
 
+	HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c1, LIDAR_ADDR1 << 1, 10, HAL_MAX_DELAY);
+	if(ret == HAL_OK)
+	{
+	  sprintf(msg, "Device is ready.\r\n");
+	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
+	}
+	else
+	{
+	  sprintf(msg, "Device is not connected.\r\n");
+	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
+	}
+}
+uint16_t GetDistance(){
+	// 1. Write 0x04 to register 0x00.
+	HAL_I2C_Mem_Write(&hi2c1, LIDAR_ADDR1 << 1, ACQ_COMMAND, 1, &TAKE_DIST, 1, HAL_MAX_DELAY);
+
+	// 2. Read register 0x01.
+	do {
+	  HAL_I2C_Mem_Read(&hi2c1, LIDAR_ADDR1 << 1, STATUS_REG, 1, &status, 1, HAL_MAX_DELAY);
+	} while (status & 0x01);
+	// 3. Repeat step 2 until bit 0 (LSB) goes low.
+
+	// 4. Read two bytes from 0x10 (low byte 0x10 then high byte 0x11) to obtain the 16-bit measured distance in centimeters.
+	HAL_I2C_Mem_Read(&hi2c1, LIDAR_ADDR1 << 1, DISTANCE_REG_LOW, 1, &distance_low, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Read(&hi2c1, LIDAR_ADDR1 << 1, DISTANCE_REG_HIGH, 1, &distance_high, 1, HAL_MAX_DELAY);
+
+	return (((uint16_t)distance_high << 8) | distance_low);
+}
 /* USER CODE END 0 */
 
 /**
@@ -73,9 +116,7 @@ static void MX_I2C1_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	uint8_t status;
-	uint8_t distance_low, distance_high;
-	uint16_t distance_cm;
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -99,24 +140,29 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-
+  char msg[128];
+  /*
   HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c1, LIDAR_ADDR1 << 1, 10, HAL_MAX_DELAY);
   if(ret == HAL_OK)
   {
-	  printf("Device is ready.");
+	  sprintf(msg, "Device is ready.\r\n");
+	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
   }
   else
   {
-	  printf("Device not connected.");
-  }
+	  sprintf(msg, "Device is not connected.\r\n");
+	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
+  }*/
+  CheckDevice();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  /*
 	  // 1. Write 0x04 to register 0x00.
-	  HAL_I2C_Mem_Write(&hi2c1, LIDAR_ADDR1 << 1, ACQ_COMMAND, 1, 0x04, 1, HAL_MAX_DELAY);
+	  HAL_I2C_Mem_Write(&hi2c1, LIDAR_ADDR1 << 1, ACQ_COMMAND, 1, &TAKE_DIST, 1, HAL_MAX_DELAY);
 
 	  // 2. Read register 0x01.
 	  do {
@@ -129,10 +175,13 @@ int main(void)
 	  HAL_I2C_Mem_Read(&hi2c1, LIDAR_ADDR1 << 1, DISTANCE_REG_HIGH, 1, &distance_high, 1, HAL_MAX_DELAY);
 
 	  distance_cm = ((uint16_t)distance_high << 8) | distance_low;
+	  */
+	  distance_cm = GetDistance();
 
-	  printf("%d", distance_cm);
+	  sprintf(msg, "distance: %d\r\n", distance_cm);
+	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
+	  HAL_Delay(500);
 
-	  HAL_Delay(100);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -200,7 +249,7 @@ static void MX_I2C1_Init(void)
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
   hi2c1.Init.Timing = 0x0000020B;
-  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.OwnAddress1 = 196;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c1.Init.OwnAddress2 = 0;
