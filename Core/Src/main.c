@@ -76,7 +76,7 @@ uint8_t status;
 uint8_t distance_low;
 uint8_t distance_high;
 uint16_t distance_cm;
-void CheckDevice(){
+HAL_StatusTypeDef CheckDevice(){
 	char msg[128];
 
 	HAL_StatusTypeDef ret = HAL_I2C_IsDeviceReady(&hi2c1, LIDAR_ADDR1 << 1, 10, HAL_MAX_DELAY);
@@ -90,14 +90,17 @@ void CheckDevice(){
 	  sprintf(msg, "Device is not connected.\r\n");
 	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
 	}
+	return ret;
 }
 uint16_t GetDistance(){
 	// 1. Write 0x04 to register 0x00.
 	HAL_I2C_Mem_Write(&hi2c1, LIDAR_ADDR1 << 1, ACQ_COMMAND, 1, &TAKE_DIST, 1, HAL_MAX_DELAY);
-
+	int i = 0;
 	// 2. Read register 0x01.
 	do {
+		if(i > 1000) return 0;
 	  HAL_I2C_Mem_Read(&hi2c1, LIDAR_ADDR1 << 1, STATUS_REG, 1, &status, 1, HAL_MAX_DELAY);
+	  i++;
 	} while (status & 0x01);
 	// 3. Repeat step 2 until bit 0 (LSB) goes low.
 
@@ -106,6 +109,26 @@ uint16_t GetDistance(){
 	HAL_I2C_Mem_Read(&hi2c1, LIDAR_ADDR1 << 1, DISTANCE_REG_HIGH, 1, &distance_high, 1, HAL_MAX_DELAY);
 
 	return (((uint16_t)distance_high << 8) | distance_low);
+}
+void L_RED_LED() {
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+}
+void L_GREEN_LED() {
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+}
+void L_YELLOW_LED() {
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+}
+void L_OFF_LED() {
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
 }
 /* USER CODE END 0 */
 
@@ -142,7 +165,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   char msg[128];
 
-  CheckDevice();
+  while(CheckDevice() != HAL_OK) {}
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -154,7 +177,19 @@ int main(void)
 
 	  sprintf(msg, "distance: %d\r\n", distance_cm);
 	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
-	  HAL_Delay(500);
+	  HAL_Delay(250);
+
+
+	  if(distance_cm == 0)
+		  L_OFF_LED();
+	  else if(distance_cm < 100)
+		  L_RED_LED();
+	  else if(distance_cm > 100)
+		  L_YELLOW_LED();
+	  else if(distance_cm > 500)
+		  L_GREEN_LED();
+
+
 
     /* USER CODE END WHILE */
 
@@ -296,6 +331,7 @@ static void MX_USART2_UART_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 /* USER CODE BEGIN MX_GPIO_Init_1 */
 /* USER CODE END MX_GPIO_Init_1 */
 
@@ -303,6 +339,16 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, L_RED_Pin|L_GREEN_Pin|L_BLUE_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : L_RED_Pin L_GREEN_Pin L_BLUE_Pin */
+  GPIO_InitStruct.Pin = L_RED_Pin|L_GREEN_Pin|L_BLUE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
