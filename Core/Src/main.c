@@ -183,27 +183,27 @@ void L_OFF_LED() {
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
 }
-/*
+
 void R_RED_LED() {
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
 }
 void R_GREEN_LED() {
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
 }
 void R_YELLOW_LED() {
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
 }
 void R_OFF_LED() {
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-}*/
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);	//red pin
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, GPIO_PIN_RESET); 	//green pin
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);	//blue pin
+}
 /* USER CODE END 0 */
 
 /**
@@ -239,8 +239,14 @@ int main(void)
   /* USER CODE BEGIN 2 */
   char msg[128];
   //configureLidarAddress(LIDAR_ADDR1, LIDAR_ADDR2, 1);
-  while(CheckDevice(LIDAR_ADDR1) != HAL_OK) {}
-  while(CheckDevice(LIDAR_ADDR2) != HAL_OK) {}
+  while(CheckDevice(LIDAR_ADDR1) != HAL_OK) {
+	  sprintf(msg, "device 1\r\n");
+	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
+  }
+  while(CheckDevice(LIDAR_ADDR2) != HAL_OK) {
+	  sprintf(msg, "device 2\r\n");
+	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
+  }
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -256,29 +262,22 @@ int main(void)
 	  sprintf(msg, "distance R: %d\r\n", distanceR);
 	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
 
-	  HAL_Delay(250);
+	  HAL_Delay(100);
 
-	  if(distanceL < 100 && distanceR < 100 && distanceL != 0 && distanceR != 0) {
+
+	  if(distanceL < 50 && distanceR < 50 && distanceL != 0 && distanceR != 0) {
 		  L_GREEN_LED();
 		  R_GREEN_LED();
 	  }
 	  else {
-		  if(distanceL == 0)
-			  L_OFF_LED();
-		  else if(distanceL < 100)
+		  if(distanceL < 50)
 			  L_RED_LED();
-		  else if(distanceL > 100)
+		  else
 			  L_YELLOW_LED();
-		  else if(distanceL > 500)
-			  L_GREEN_LED();
-		  if(distanceR == 0)
-				  L_OFF_LED();
-		  else if(distanceR < 100)
-			  L_RED_LED();
-		  else if(distanceR > 100)
-			  L_YELLOW_LED();
-		  else if(distanceR > 500)
-			  L_GREEN_LED();
+		  if(distanceR < 50)
+			  R_RED_LED();
+		  else
+			  R_YELLOW_LED();
 	  }
 
 
@@ -434,14 +433,27 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, L_RED_Pin|L_GREEN_Pin|L_BLUE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, L_RED_Pin|L_GREEN_Pin|L_BLUE_Pin|R_BLUE_Pin
+                          |R_GREEN_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : L_RED_Pin L_GREEN_Pin L_BLUE_Pin */
-  GPIO_InitStruct.Pin = L_RED_Pin|L_GREEN_Pin|L_BLUE_Pin;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(R_RED_GPIO_Port, R_RED_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : L_RED_Pin L_GREEN_Pin L_BLUE_Pin R_BLUE_Pin
+                           R_GREEN_Pin */
+  GPIO_InitStruct.Pin = L_RED_Pin|L_GREEN_Pin|L_BLUE_Pin|R_BLUE_Pin
+                          |R_GREEN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : R_RED_Pin */
+  GPIO_InitStruct.Pin = R_RED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(R_RED_GPIO_Port, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
