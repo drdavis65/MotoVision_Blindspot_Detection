@@ -9,9 +9,9 @@
 ../Core/Inc/RGB_LED.h:32:6:R_GREEN_LED	8	static
 ../Core/Inc/RGB_LED.h:36:6:R_YELLOW_LED	8	static
 ../Core/Inc/RGB_LED.h:40:6:R_OFF_LED	8	static
-../Core/Src/main.c:77:5:main	144	static
-../Core/Src/main.c:187:6:SystemClock_Config	96	static
-../Core/Src/main.c:231:13:MX_I2C1_Init	8	static
-../Core/Src/main.c:279:13:MX_USART2_UART_Init	8	static
-../Core/Src/main.c:314:13:MX_GPIO_Init	40	static
-../Core/Src/main.c:357:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:78:5:main	144	static
+../Core/Src/main.c:203:6:SystemClock_Config	96	static
+../Core/Src/main.c:247:13:MX_I2C1_Init	8	static
+../Core/Src/main.c:295:13:MX_USART2_UART_Init	8	static
+../Core/Src/main.c:330:13:MX_GPIO_Init	40	static
+../Core/Src/main.c:373:6:Error_Handler	4	static,ignoring_inline_asm

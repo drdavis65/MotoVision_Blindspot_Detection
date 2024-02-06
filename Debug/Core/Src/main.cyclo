@@ -9,9 +9,9 @@ RGB_LED.h:28:6:R_RED_LED	1
 RGB_LED.h:32:6:R_GREEN_LED	1
 RGB_LED.h:36:6:R_YELLOW_LED	1
 RGB_LED.h:40:6:R_OFF_LED	1
-main.c:77:5:main	9
-main.c:187:6:SystemClock_Config	4
-main.c:231:13:MX_I2C1_Init	4
-main.c:279:13:MX_USART2_UART_Init	2
-main.c:314:13:MX_GPIO_Init	1
-main.c:357:6:Error_Handler	1
+main.c:78:5:main	11
+main.c:203:6:SystemClock_Config	4
+main.c:247:13:MX_I2C1_Init	4
+main.c:295:13:MX_USART2_UART_Init	2
+main.c:330:13:MX_GPIO_Init	1
+main.c:373:6:Error_Handler	1

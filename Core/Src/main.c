@@ -65,10 +65,6 @@ static void MX_I2C1_Init(void);
 /* USER CODE BEGIN 0 */
 
 
-// Other main functions and setup go here...
-
-
-
 /* USER CODE END 0 */
 
 /**
@@ -141,35 +137,51 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
+	  // Get right and left distances
 	  tempR = GetDistance(LIDAR_ADDR1);
-	  if(tempR > 5)
-		  distanceR = tempR;
-	  if(distanceR < 100)
-		  R_RED_LED();
-	  else if(distanceR > 200)
-		  R_OFF_LED();
-	  else
-		  R_YELLOW_LED();
-	  //HAL_Delay(100);
 	  tempL = GetDistance(LIDAR_ADDR2);
-	  if(tempL > 5)
-		  distanceL = tempL;
-	  if(distanceL < 100)
-		  L_RED_LED();
-	  else if(distanceL > 200)
+
+	  // Check for 'Lane Splitting' condition
+	  if(tempR < 100 && tempL < 100)
+	  {
+		  R_OFF_LED();
 		  L_OFF_LED();
-	  else
-		  L_YELLOW_LED();
-	  //HAL_Delay(100);
+	  }
+	  else {
+		  // Check for valid right distance and set
+		  if(tempR > 5)
+			  distanceR = tempR;
+		  // If distance not valid keep previous distance
+		  if(distanceR < 100)
+			  R_RED_LED();
+		  else if(distanceR > 200)
+			  R_OFF_LED();
+		  else
+			  R_YELLOW_LED();
+
+		  // Check for valid left distance and set
+		  if(tempL > 5)
+			  distanceL = tempL;
+		  // If distance not valid keep previous distance
+		  if(distanceL < 100)
+			  L_RED_LED();
+		  else if(distanceL > 200)
+			  L_OFF_LED();
+		  else
+			  L_YELLOW_LED();
+	  }
 
 
+
+	  /*
 	  sprintf(msg, "distance L: %d\r\n", distanceL);
 	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
 
 	  sprintf(msg, "distance R: %d\r\n", distanceR);
 	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
+	  */
 
+	  // Wait 100 ms
 	  HAL_Delay(100);
 
 
