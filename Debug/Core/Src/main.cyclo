@@ -1,6 +1,3 @@
-garmin_lidar_litev4.h:41:19:CheckDevice	2
-garmin_lidar_litev4.h:58:6:configureLidarAddress	2
-garmin_lidar_litev4.h:95:10:GetDistance	3
 RGB_LED.h:11:6:L_RED_LED	1
 RGB_LED.h:15:6:L_GREEN_LED	1
 RGB_LED.h:19:6:L_YELLOW_LED	1
@@ -9,9 +6,14 @@ RGB_LED.h:28:6:R_RED_LED	1
 RGB_LED.h:32:6:R_GREEN_LED	1
 RGB_LED.h:36:6:R_YELLOW_LED	1
 RGB_LED.h:40:6:R_OFF_LED	1
-main.c:78:5:main	11
-main.c:203:6:SystemClock_Config	4
-main.c:247:13:MX_I2C1_Init	4
-main.c:295:13:MX_USART2_UART_Init	2
-main.c:330:13:MX_GPIO_Init	1
-main.c:373:6:Error_Handler	1
+garmin_lidar_litev4.h:43:19:CheckDevice	2
+garmin_lidar_litev4.h:60:6:configureLidarAddress	2
+garmin_lidar_litev4.h:97:10:GetDistance	3
+garmin_lidar_litev4.h:121:6:CheckRightSensor	2
+garmin_lidar_litev4.h:136:6:CheckLeftSensor	2
+main.c:74:5:main	9
+main.c:205:6:SystemClock_Config	4
+main.c:249:13:MX_I2C1_Init	4
+main.c:297:13:MX_USART2_UART_Init	2
+main.c:332:13:MX_GPIO_Init	1
+main.c:375:6:Error_Handler	1

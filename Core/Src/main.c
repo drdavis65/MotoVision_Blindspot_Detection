@@ -98,36 +98,12 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  char msg[128];
+
+  // Set left sensor address and disable default address
   configureLidarAddress(LIDAR_ADDR2, LIDAR_ADDR2, 1);
 
-  while(CheckDevice(LIDAR_ADDR1) != HAL_OK) {
-	  sprintf(msg, "device 1\r\n");
-	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
-  }
-  R_RED_LED();
-  HAL_Delay(100);
-  R_OFF_LED();
-  HAL_Delay(100);
-  R_RED_LED();
-  HAL_Delay(100);
-  R_OFF_LED();
-  HAL_Delay(100);
-
-  while(CheckDevice(LIDAR_ADDR2) != HAL_OK) {
-	  sprintf(msg, "device 2\r\n");
-	  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
-  }
-  L_RED_LED();
-  HAL_Delay(100);
-  L_OFF_LED();
-  HAL_Delay(100);
-  L_RED_LED();
-  HAL_Delay(100);
-  L_OFF_LED();
-  HAL_Delay(100);
-
-
+  CheckRightSensor();
+  CheckLeftSensor();
 
   uint16_t tempR;
   uint16_t tempL;

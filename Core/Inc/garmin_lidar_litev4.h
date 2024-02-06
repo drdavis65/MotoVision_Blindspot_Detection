@@ -8,6 +8,7 @@
 #define SRC_GARMIN_LIDAR_LITEV4_H_
 
 #include "stm32f3xx_hal_conf.h"
+#include "RGB_LED.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -37,6 +38,7 @@ uint8_t distance_low;
 uint8_t distance_high;
 uint16_t distanceL = 0;
 uint16_t distanceR = 0;
+char msg[128];
 
 HAL_StatusTypeDef CheckDevice(uint8_t lidarAddr){
 	char msg[128];
@@ -114,6 +116,36 @@ uint16_t GetDistance(uint8_t lidarAddr){
 	HAL_I2C_Mem_Read(&hi2c1, lidarAddr << 1, DISTANCE_REG_HIGH, 1, &distance_high, 1, HAL_MAX_DELAY);
 
 	return (((uint16_t)distance_high << 8) | distance_low);
+}
+
+void CheckRightSensor() {
+	while(CheckDevice(LIDAR_ADDR1) != HAL_OK) {
+		  sprintf(msg, "device 1\r\n");
+		  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
+	  }
+	  R_RED_LED();
+	  HAL_Delay(100);
+	  R_OFF_LED();
+	  HAL_Delay(100);
+	  R_RED_LED();
+	  HAL_Delay(100);
+	  R_OFF_LED();
+	  HAL_Delay(100);
+}
+
+void CheckLeftSensor() {
+	while(CheckDevice(LIDAR_ADDR2) != HAL_OK) {
+		  sprintf(msg, "device 2\r\n");
+		  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
+	  }
+	  L_RED_LED();
+	  HAL_Delay(100);
+	  L_OFF_LED();
+	  HAL_Delay(100);
+	  L_RED_LED();
+	  HAL_Delay(100);
+	  L_OFF_LED();
+	  HAL_Delay(100);
 }
 
 #endif /* SRC_GARMIN_LIDAR_LITEV4_H_ */
