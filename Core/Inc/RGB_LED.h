@@ -1,0 +1,45 @@
+/*
+ * RGB_LED.h
+ *
+ */
+
+#ifndef INC_RGB_LED_H_
+#define INC_RGB_LED_H_
+
+#include "stm32f3xx_hal_conf.h"
+
+void L_RED_LED() {
+	HAL_GPIO_WritePin(GPIOA, L_RED_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, L_GREEN_Pin, GPIO_PIN_RESET);
+}
+void L_GREEN_LED() {
+	HAL_GPIO_WritePin(GPIOA, L_RED_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, L_GREEN_Pin, GPIO_PIN_SET);
+}
+void L_YELLOW_LED() {
+	HAL_GPIO_WritePin(GPIOA, L_RED_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, L_GREEN_Pin, GPIO_PIN_SET);
+}
+void L_OFF_LED() {
+	HAL_GPIO_WritePin(GPIOA, L_RED_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, L_GREEN_Pin, GPIO_PIN_RESET);
+}
+
+void R_RED_LED() {
+	HAL_GPIO_WritePin(GPIOB, R_RED_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, R_GREEN_Pin, GPIO_PIN_RESET);
+}
+void R_GREEN_LED() {
+	HAL_GPIO_WritePin(GPIOB, R_RED_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, R_GREEN_Pin, GPIO_PIN_SET);
+}
+void R_YELLOW_LED() {
+	HAL_GPIO_WritePin(GPIOB, R_RED_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, R_GREEN_Pin, GPIO_PIN_SET);
+}
+void R_OFF_LED() {
+	HAL_GPIO_WritePin(GPIOB, R_RED_Pin, GPIO_PIN_RESET);	//red pin
+	HAL_GPIO_WritePin(GPIOA, R_GREEN_Pin, GPIO_PIN_RESET); 	//green pin
+}
+
+#endif /* INC_RGB_LED_H_ */

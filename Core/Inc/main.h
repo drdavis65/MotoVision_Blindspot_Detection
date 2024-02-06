@@ -65,10 +65,6 @@ void Error_Handler(void);
 #define VCP_TX_GPIO_Port GPIOA
 #define L_GREEN_Pin GPIO_PIN_3
 #define L_GREEN_GPIO_Port GPIOA
-#define L_BLUE_Pin GPIO_PIN_4
-#define L_BLUE_GPIO_Port GPIOA
-#define R_BLUE_Pin GPIO_PIN_8
-#define R_BLUE_GPIO_Port GPIOA
 #define R_GREEN_Pin GPIO_PIN_11
 #define R_GREEN_GPIO_Port GPIOA
 #define SWDIO_Pin GPIO_PIN_13
