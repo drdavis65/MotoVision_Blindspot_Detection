@@ -99,8 +99,8 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
-  // Set left sensor address and disable default address
-  ConfigureLidarAddress(LIDAR_ADDR2, LIDAR_ADDR2, 1);
+  // Disable default address for left sensor
+  DisableDefaultAddress(LIDAR_ADDR_L);
 
   CheckRightSensor();
   CheckLeftSensor();
@@ -114,8 +114,8 @@ int main(void)
   while (1)
   {
 	  // Get right and left distances
-	  tempR = GetDistance(LIDAR_ADDR1);
-	  tempL = GetDistance(LIDAR_ADDR2);
+	  tempR = GetDistance(LIDAR_ADDR_R);
+	  tempL = GetDistance(LIDAR_ADDR_L);
 
 	  // Check for 'Lane Splitting' condition
 	  if(tempR < 100 && tempL < 100)

@@ -19,8 +19,8 @@ I2C_HandleTypeDef hi2c1;
 UART_HandleTypeDef huart2;
 
 
-uint8_t LIDAR_ADDR1 = 0x62;
-uint8_t LIDAR_ADDR2 = 0x55;
+uint8_t LIDAR_ADDR_R = 0x62;
+uint8_t LIDAR_ADDR_L = 0x55;
 uint8_t ACQ_COMMAND = 0x00;
 uint8_t TAKE_DIST = 0x04;
 uint8_t DISTANCE_REG_LOW = 0x10;
@@ -94,6 +94,15 @@ void ConfigureLidarAddress(uint8_t lidarliteAddress, uint8_t newAddress, uint8_t
     CheckDevice(newAddress);
 }
 
+void DisableDefaultAddress(uint8_t address) {
+	uint8_t dataBytes[5];
+	dataBytes[0] = 0x01; // set bit to disable default address
+	HAL_I2C_Mem_Write(&hi2c1, address << 1, 0x1b, 1, dataBytes, 1, HAL_MAX_DELAY);
+
+	// Wait for the I2C peripheral to be restarted with new device address
+	HAL_Delay(100);
+}
+
 uint16_t GetDistance(uint8_t lidarAddr){
 	uint32_t startTick = HAL_GetTick(); // Get current tick for timeout
 
@@ -119,7 +128,7 @@ uint16_t GetDistance(uint8_t lidarAddr){
 }
 
 void CheckRightSensor() {
-	while(CheckDevice(LIDAR_ADDR1) != HAL_OK) {
+	while(CheckDevice(LIDAR_ADDR_R) != HAL_OK) {
 		  sprintf(msg, "device 1\r\n");
 		  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
 	  }
@@ -134,7 +143,7 @@ void CheckRightSensor() {
 }
 
 void CheckLeftSensor() {
-	while(CheckDevice(LIDAR_ADDR2) != HAL_OK) {
+	while(CheckDevice(LIDAR_ADDR_L) != HAL_OK) {
 		  sprintf(msg, "device 2\r\n");
 		  HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg),HAL_MAX_DELAY);
 	  }
