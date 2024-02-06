@@ -57,7 +57,7 @@ HAL_StatusTypeDef CheckDevice(uint8_t lidarAddr){
 	return ret;
 }
 
-void configureLidarAddress(uint8_t lidarliteAddress, uint8_t newAddress, uint8_t disableDefault)
+void ConfigureLidarAddress(uint8_t lidarliteAddress, uint8_t newAddress, uint8_t disableDefault)
 {
 	uint8_t dataBytes[5];
     // Enable flash storage
