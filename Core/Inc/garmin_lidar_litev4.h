@@ -19,6 +19,7 @@ I2C_HandleTypeDef hi2c1;
 UART_HandleTypeDef huart2;
 
 
+//uint8_t LIDAR_ADDR_DEFAULT = 0x62;
 uint8_t LIDAR_ADDR_R = 0x62;
 uint8_t LIDAR_ADDR_L = 0x55;
 uint8_t ACQ_COMMAND = 0x00;

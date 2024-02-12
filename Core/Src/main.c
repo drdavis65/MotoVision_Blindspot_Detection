@@ -100,7 +100,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   // Disable default address for left sensor
-  DisableDefaultAddress(LIDAR_ADDR_L);
+  // DisableDefaultAddress(LIDAR_ADDR_L);
+  ConfigureLidarAddress(LIDAR_ADDR_L, LIDAR_ADDR_L, 1);
 
   CheckRightSensor();
   CheckLeftSensor();
